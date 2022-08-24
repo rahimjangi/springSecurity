@@ -22,6 +22,8 @@ target/
 *.yml
 *.cmd
 *.md
+*.gitignore
+.mvn/wrapper/maven-wrapper.jar
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,3 +37,38 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#Common
+*#
+
+*.jar
+*.sw?
+*~
+.#*
+.*.md.html
+.DS_Store
+.attach_pid*
+.gradle
+.metadata
+.recommenders
+.vscode
+/code
+MANIFEST.MF
+_site/
+activemq-data
+bin
+build
+!/**/src/**/bin
+!/**/src/**/build
+build.log
+dependency-reduced-pom.xml
+dump.rdb
+interpolated*.xml
+lib/
+manifest.yml
+out
+overridedb.*
+target
+.flattened-pom.xml
+secrets.yml
+.gradletasknamecache
