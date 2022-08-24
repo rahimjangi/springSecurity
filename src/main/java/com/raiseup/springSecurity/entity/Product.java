@@ -1,18 +1,19 @@
 package com.raiseup.springSecurity.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "products")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 30,nullable = false)
     private String productId;
+    @Column(length = 50,nullable = false)
     private String productName;
+    @Column(nullable = false)
     private int inventory;
 
     public Long getId() {
