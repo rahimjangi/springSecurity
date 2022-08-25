@@ -31,4 +31,16 @@ public class ProductController {
         Product product = productService.getProuctByProductId(productId);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
+
+    @PostMapping
+    public ResponseEntity<Product>postProduct(@RequestBody Product product){
+        Product savedProduct=productService.save(product);
+        return new ResponseEntity<>(savedProduct,HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping
+    public ResponseEntity<Product>updateProduct(@RequestBody Product product){
+        Product updatedProduct=productService.updateProduct(product);
+        return new ResponseEntity<>(updatedProduct,HttpStatus.ACCEPTED);
+    }
 }

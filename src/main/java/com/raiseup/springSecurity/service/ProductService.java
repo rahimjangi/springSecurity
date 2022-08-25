@@ -10,4 +10,8 @@ import java.util.List;
 public interface ProductService {
     Product getProuctByProductId(String productId);
     List<Product> getAllProducts(int page, int limit);
+
+    Product save(Product product);
+
+    Product updateProduct(Product product);
 }
