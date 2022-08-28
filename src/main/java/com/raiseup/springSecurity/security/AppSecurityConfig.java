@@ -2,8 +2,8 @@ package com.raiseup.springSecurity.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -12,9 +12,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
 
@@ -29,22 +33,51 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        /* Basic AUTH
         http
-                .csrf()
-                .disable()
+//                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                .and()
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/","index","/css/*","/js/*").permitAll()
 //                .antMatchers("/api/**")
 //                .hasRole(AppUserRole.GUEST.name())//Role base AUTH
-                .antMatchers("/api/v1/**").hasAnyRole( AppUserRole.CUSTOMUSER.name(),AppUserRole.GUEST.name(),AppUserRole.MANAGER.name())
-                .antMatchers(HttpMethod.PUT,"/api/v1/**").hasAuthority(AppUserPermission.MANAGER_WRITE.getPermission())
-                .antMatchers(HttpMethod.POST,"/api/v1/**").hasAuthority(AppUserPermission.MANAGER_WRITE.getPermission())
-                .antMatchers(HttpMethod.POST,"/api/v1/**").hasAuthority(AppUserPermission.MANAGER_READ.getPermission())
-                .antMatchers(HttpMethod.DELETE,"/api/v1/**").hasAuthority(AppUserPermission.MANAGER_WRITE.getPermission())
+//                .antMatchers("/api/v1/**").hasAnyRole( AppUserRole.CUSTOMUSER.name(),AppUserRole.GUEST.name(),AppUserRole.MANAGER.name())
+//                .antMatchers(HttpMethod.PUT,"/api/v1/**").hasAuthority(AppUserPermission.MANAGER_WRITE.getPermission())
+//                .antMatchers(HttpMethod.POST,"/api/v1/**").hasAuthority(AppUserPermission.MANAGER_WRITE.getPermission())
+//                .antMatchers(HttpMethod.POST,"/api/v1/**").hasAuthority(AppUserPermission.MANAGER_READ.getPermission())
+//                .antMatchers(HttpMethod.DELETE,"/api/v1/**").hasAuthority(AppUserPermission.MANAGER_WRITE.getPermission())
                 .anyRequest()
                 .authenticated()
                 .and()
              .httpBasic();
+             */
+
+        //Form Based Auth
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/","index","/css/*","/js/*").permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login").permitAll()
+                .defaultSuccessUrl("/products",true)
+                .passwordParameter("password")
+                .usernameParameter("username")
+                .and()
+                .rememberMe().tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(30))
+                .key("oiyuaiouyfiuhadlkjvlasd")
+                .rememberMeParameter("remember-me")
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout","GET"))
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID","remember-me")
+                .logoutSuccessUrl("/login");
     }
 
     @Override
@@ -70,7 +103,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .username("custom")
                 .password(passwordEncoder.encode("password"))
 //                .roles(AppUserRole.CUSTOMUSER.name())
-                .authorities(AppUserRole.CUSTOMUSER.getGrantedAuthorities())
+                .authorities(AppUserRole.CUSTOMER.getGrantedAuthorities())
                 .build();
 
         return new InMemoryUserDetailsManager(userRahim,adminUser,customUser);

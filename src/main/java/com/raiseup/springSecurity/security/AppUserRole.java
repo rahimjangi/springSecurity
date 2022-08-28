@@ -15,7 +15,7 @@ public enum AppUserRole {
             MANAGER_WRITE
     ))
     ,
-    CUSTOMUSER(Sets.newHashSet(
+    CUSTOMER(Sets.newHashSet(
             MANAGER_READ,
             QUEST_READ
     ))
